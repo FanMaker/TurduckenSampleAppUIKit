@@ -110,12 +110,34 @@ final class RegionListViewController: UIViewController {
     }
 
     private func setupNavBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "Present FanMaker",
-            style: .plain,
-            target: self,
-            action: #selector(presentFanMakerTapped)
-        )
+        // Three ways in, for comparison.
+        //   Sheet — sdk.present(style: .sheet), the SDK's default
+        //   Full  — sdk.present(style: .fullScreen), the opt-in
+        //   Host  — what this app did before: wrap the representable in a
+        //           UIHostingController, walk the hierarchy for a presenter,
+        //           register close observers, dismiss by hand
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(title: "Sheet", style: .done, target: self,
+                            action: #selector(presentSheetTapped)),
+            UIBarButtonItem(title: "Full", style: .plain, target: self,
+                            action: #selector(presentFullScreenTapped)),
+            UIBarButtonItem(title: "Host", style: .plain, target: self,
+                            action: #selector(presentFanMakerTapped))
+        ]
+    }
+
+    @objc private func presentSheetTapped() {
+        let began = Date()
+        let ok = AppDelegate.fanmakerSDK1.present(style: .sheet)
+        NSLog("SAMPLE sheet: present -> \(ok), blocked the main thread for %.3f s",
+              Date().timeIntervalSince(began))
+    }
+
+    @objc private func presentFullScreenTapped() {
+        let began = Date()
+        let ok = AppDelegate.fanmakerSDK1.present(style: .fullScreen)
+        NSLog("SAMPLE fullScreen: present -> \(ok), blocked the main thread for %.3f s",
+              Date().timeIntervalSince(began))
     }
 
     @objc private func presentFanMakerTapped() {
